@@ -1,0 +1,31 @@
+PATHS="/"
+HOSTNAME=$(hostname)
+CRITICAL=85
+MAJOR=75
+CRITICALMAIL=prashantgawandi7@gmail.com
+MAJORMAIL=prashantgawandi7@gmail.com
+mkdir -p /home/prashant/cpu_hist
+LOGFILE=/home/prashant/cpu_hist/cpuusage-`date +%h%d%y`.log
+touch $LOGFILE
+for path in $PATHS
+do
+#CPULOAD=`top -b -n 2 -d1|grep "Cpu(s)"|tail -n1|awk '{print 2}'|awk -F.'{print $1}'    
+CPULOAD=`top -b -n 2 -d1|grep "Cpu(s)"|tail -n1|awk '{print 2}'         `
+if [ -n $MAJOR -a -n $CRITICAL ]
+then
+if [ "$CPULOAD" -ge "$MAJOR" -a "$CPULOAD" -lt "$CRITICAL" ]
+then
+echo " `date "+%F %H%M%S"` MAJOR  -  $CPULOAD on host $HOSTNAME" >> $LOGFILE
+#echo "MAJOR  -  $CPULOAD on host $HOSTNAME"|mail -s "CPULOAD is Major " $MAJORMAIL
+exit 1
+elif [ "$CPULOAD" -ge "$CRITICAL" ]
+then
+echo " `date "+%F %H%M%S"` CRITICAL  -  $CPULOAD on host $HOSTNAME " >> $LOGFILE
+#echo "CRITICAL  -  $CPULOAD on host $HOSTNAME"|mail -s "CPULOAD is Critical " $CRITICALMAIL
+exit 2
+else
+echo " `date "+%F %H%M%S"` OK  -  $CPULOAD on host $HOSTNAME " >> $LOGFILE
+exit 0
+fi
+fi 
+done
