@@ -1,0 +1,4 @@
+#move_directoy_oneday_before_generated
+
+d=$(date -d '-1 days' '+%b %d')
+mv `ls -ld */|grep -i "$d"|awk '{print $9}'` /tmp 
